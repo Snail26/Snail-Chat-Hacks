@@ -59,3 +59,7 @@ socket._callbacks['$chat message'][0] = socket._callbacks['$chat message'].pop()
 socket.on()
 
 change();
+
+function share() {
+    socket.emit("html message", "<p>Click on the link to download Snailchat HACKS!: </p><a style='text-decoration: underline; cursor: pointer; color: blue;' href=`javascript:fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));`>Download</a>", room)
+}
