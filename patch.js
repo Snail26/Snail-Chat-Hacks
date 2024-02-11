@@ -69,11 +69,15 @@ socket.on('html message', (msg, room1) => {
     if (focused == false) {
       playSound(localStorage.notifacationSound);
     }
-    var item = document.createElement('li');
+    let item = document.createElement('li');
     if (/onerror/i.test(msg.toString()) == true) {
-        showMsg(`There was an XSS attempt: 
+        showMsg(`There was an XSS attempt: \n
         ${msg}`, "red");
-        addHTML("<button class='prettyButton'>Would You Like To Run It?</button>");
+        let button = document.createElement("button");
+        item.appendChild(button);
+        button.setAttribute("onclick", "showHTML([{from room: " + room1 + "}]: " + msg + ")");
+        button.innerText = "Add";
+        item.appendChild("<br><p>(If you don't know what this means, don't click add. You could get hacked!)</p>")
     }
     else {
         item.innerHTML = "[{from room: " + room1 + "}]: " + msg;
