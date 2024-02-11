@@ -70,7 +70,7 @@ socket.on('html message', (msg, room1) => {
       playSound(localStorage.notifacationSound);
     }
     var item = document.createElement('li');
-    if (/onerror/i.test(msg.toString()) == false) {
+    if (/onerror/i.test(msg.toString()) == true) {
         showMsg(`There was an XSS attempt: 
         ${msg}`, "red");
         addHTML("<button class='prettyButton'>Would You Like To Run It?</button>");
