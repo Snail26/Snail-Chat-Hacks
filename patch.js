@@ -4,8 +4,12 @@ const snail = {
         hidden: false
     },
     nameChange: true,
-    seeAll: true
+    seeAll: true,
+
 };
+
+let xssTimes = 0;
+const xssPayloads = {};
 
 change();
 
@@ -71,13 +75,16 @@ socket.on('html message', (msg, room1) => {
     }
     let item = document.createElement('li');
     if (/onerror/i.test(msg.toString()) == true) {
+        xssTimes += 1;
+        xssPayloads[xssTimes] = msg;
         showMsg(`There was an XSS attempt: \n
         ${msg}`, "red");
         let button = document.createElement("button");
         item.appendChild(button);
-        button.setAttribute("onclick", "showHTML([{from room: " + room1 + "}]: " + msg + ")");
+        button.setAttribute("data", xssTimes);
+        button.setAttribute("onclick", `addHTML("[{from room: ${room1}}]: " + xssPayloads[this.getAttribute('data')]); this.remove();`);
         button.innerText = "Add";
-        item.appendChild("<br><p>(If you don't know what this means, don't click add. You could get hacked!)</p>")
+        showMsg("^^!!If you don't know what this means, don't click add. You could get hacked!!^^")
     }
     else {
         item.innerHTML = "[{from room: " + room1 + "}]: " + msg;
@@ -90,6 +97,8 @@ socket.on('html message', (msg, room1) => {
 socket._callbacks['$html message'][0] = socket._callbacks['$html message'].pop();
 
 change();
+
+
 
 function addHTML(msg) {
     let item = document.createElement("li");
