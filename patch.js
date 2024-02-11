@@ -83,6 +83,8 @@ socket.on('html message', (msg, room1) => {
     item.setAttribute("class", brightness);
 });
 
+socket._callbacks['$html message'][0] = socket._callbacks['$html message'].pop();
+
 change();
 
 function addHTML(msg) {
