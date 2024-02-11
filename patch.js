@@ -1,6 +1,6 @@
 const snail = {
     showName: {
-        show: prompt("Would you like to show your name to others?"),
+        show: confirm("Would you like to show your name to others?"),
         hidden: false
     },
     nameChange: true,
