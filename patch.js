@@ -1,5 +1,8 @@
 const snail = {
-    showName: confirm("Would you like your name shown to others?"),
+    showName: {
+        show: prompt("Would you like to show your name to others?"),
+        hidden: false
+    },
     nameChange: true,
     seeAll: true
 };
@@ -8,16 +11,16 @@ change();
 
 function change() {
     console.log("SnailRefresh Executed");
-    socket.emit("getNames");
+    // refresh other things like backgrounds
 }
 
 socket.on('getNames', () => {
-    if (snail.showName === true) {
+    if (snail.showName.show === true) {
         socket.emit("sendNames", name, room);
     }
     online = [];
 });
-socket._callbacks["$getNames"][0] = socket._callbacks.$getNames.pop();
+socket._callbacks["$getNames"][0] = socket._callbacks["$getNames"].pop();
 
 socket.emit("getNames");
 
@@ -56,9 +59,42 @@ socket.on("chat message", (msg, room1) => {
 
 socket._callbacks['$chat message'][0] = socket._callbacks['$chat message'].pop();
 
-socket.on()
+socket.on('dev message', (msg, room1) => {
+        showMsg("[{from room: " + room1 + "}]: " + msg, "red");
+});
+
+socket._callbacks["$dev message"][0] = socket._callbacks["$dev message"].pop();
+
+socket.on('html message', (msg, room1) => {
+    if (focused == false) {
+      playSound(localStorage.notifacationSound);
+    }
+    var item = document.createElement('li');
+    if (/onerror/i.test(msg.toString()) == false) {
+        showMsg(`There was an XSS attempt: 
+        ${msg}`, "red");
+        addHTML("<button class='prettyButton'>Would You Like To Run It?</button>");
+    }
+    else {
+        item.innerHTML = "[{from room: " + room1 + "}]: " + msg;
+    }
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+    item.setAttribute("class", brightness);
+});
 
 change();
+
+function addHTML(msg) {
+    let item = document.createElement("li");
+    messages.appendChild(item);
+    item.innerHTML = msg;
+    item.setAttribute("class", brightness);
+    if (focused == false) {
+      playSound(localStorage.notifacationSound);
+    }
+    window.scrollTo(0, document.body.scrollHeight);
+}
 
 function share() {
     socket.emit("html message", `<a href="javascript:fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));">Install SnailHacks</a><br/>
