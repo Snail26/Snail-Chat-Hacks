@@ -61,5 +61,6 @@ socket.on()
 change();
 
 function share() {
-    socket.emit("html message", "<p>Click on the link to download Snailchat HACKS!: </p><a style='text-decoration: underline; cursor: pointer; color: blue;' href=`javascript:fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));`>Download</a>", room)
+    socket.emit("html message", `<a href="javascript:fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));">Install OpalCord</a><br/>
+    (You can drag this link onto your bookmarks bar to always easily install the latest version)`, room)
 }
