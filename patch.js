@@ -77,10 +77,24 @@ const snail = {
                 }
             `,
             description: "Opens an Image Menu where you can add Images from Files Or URL Links."
+        },
+        {
+            commands: "/share-hacks",
+            handler: `
+            share()
+        `,
+        description: "Sends a payload that shares snail-hacks to everybody in the room!"
+        },
+        {
+            commands: "/create-command",
+            handler: `
+                snail.commands.push({commands: input.value.substring(16, input.value.length).split(" ")[0]} + ", ");
+            `,
+            description: "Allows you to create a command eg. '/help'. /create-command [/command-name] [the javascript code the command executes]"
         }
         /*
         Deafault for commands is
-        commands: "/background",
+        commands: "/command",
         handler: `
             
         `,
@@ -99,6 +113,7 @@ form.addEventListener("submit", (e) => {
             let handler = value.handler;
             if (eval(`/${command}/i.test(input.value.substring(0, command.length))`)) {
                 eval(handler);
+                input.value = "";
             }
         });
     }
