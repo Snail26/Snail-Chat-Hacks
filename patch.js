@@ -5,8 +5,110 @@ const snail = {
     },
     nameChange: true,
     seeAll: true,
-
+    commands: [
+        {
+            commands: "/help",
+            handler: `
+                input.value = "";
+                showMsg("Help Menu:", "red");
+                snail.commands.forEach((command) => {
+                    showMsg(command.commands + ": " + command.description, "red");
+                });
+                showMsg("Help Menu End", "red");
+            `,
+            description: "Shows The Help Menu."
+        },
+        {
+            commands: "/background",
+            handler: `
+                input.value = "";
+                var item = document.createElement("li");
+                messages.appendChild(item);
+                item.innerHTML = "<div style='width: 10%; aspect-ratio : 1 / 1; border-radius: 10%; background-color: #ffff; cursor: pointer; text-align: center; border: 2px solid #efefef;' onclick='brightness = \`light\`; changeBrightness(); this.parentElement.remove()'><p style='position: relative; top: 35%; color: black;'><b>Light Mode</b></p></div><div style='width: 10%; aspect-ratio : 1 / 1; border-radius: 10%; background-color: #444; cursor: pointer; text-align: center; border: 2px solid #efefef;' onclick='brightness = \`dark\`; changeBrightness(); this.parentElement.remove()'><p style='position: relative; top: 35%; color: white;'><b>Dark Mode</b></p></div><div style='width: 10%; aspect-ratio : 1 / 1; border-radius: 10%; background-color: black; cursor: pointer; text-align: center; border: 2px solid #efefef;' onclick='brightness = \`midnight\`; changeBrightness(); this.parentElement.remove()'><p style='position: relative; top: 35%; color: white;'><b>Midnight Mode</b></p></div>";
+                item.setAttribute("class", brightness);
+                if (focused == false) {
+                    playSound(localStorage.notifacationSound);
+                }
+                window.scrollTo(0, document.body.scrollHeight);
+            `,
+            description: "Opens the Background Change Menu."
+        },
+        {
+            commands: "/img",
+            handler: `
+            if (allowedImg == true) {
+                input.value = "";
+                images++;
+                var item = document.createElement('li');
+                imgMenu = item;
+                item.innerHTML = "<p><b>Img menu:</b></p><br><ul><p>Img Url: </p></ul><input placeholder='Image URL Here' id='imgURLInput" + images + "'><button onclick='URLImg(); imgMenu.remove();'>Add Image</button><br><form id='imgForm" + images + "'><input type='file' accept='image/*' id='imgFileInput" + images + "'><button>Add File Image</button></form>";
+                item.style.color = "red";
+                item.setAttribute("id", "imgMenu" + images)
+                messages.appendChild(item);
+                item.setAttribute("class", brightness)
+                window.scrollTo(0, document.body.scrollHeight);
+                allowedImg = false;
+                document.getElementById("imgForm" + images).addEventListener("submit", e => {
+                  e.preventDefault()
+                  var imageInput = document.getElementById('imgFileInput' + images);
+                    if (imageInput.files.length > 0) {
+                        var selectedFile = imageInput.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            socket.emit("html message", "<p>" + name + ": </p><img src='" + e.target.result + "'>", room);
+                            allowedImg = true;
+                            document.getElementById("imgMenu" + images).innerHTML = "<b>Image Added Successfully</b>";
+                            window.setTimeout(() => {
+                              document.getElementById("imgMenu" + images).remove()
+                            }, 1500)
+                        };
+                        reader.readAsDataURL(selectedFile);
+                      }
+                    })
+                }
+                else {
+                  input.value = "";
+                  var item = document.createElement('li');
+                  item.innerHTML = "You Already Have An Image Menu Open. Would You Like To Close It? <button onclick='imgMenu.remove(); allowedImg = true;'>Close Menu</button><button onclick='this.parentElement.remove();'>Cancel</button>";
+                  item.style.color = "red";
+                  messages.appendChild(item);
+                  item.setAttribute("class", brightness)
+                  window.scrollTo(0, document.body.scrollHeight);
+                }
+            `,
+            description: "Opens an Image Menu where you can add Images from Files Or URL Links."
+        }
+        /*
+        Deafault for commands is
+        commands: "/background",
+        handler: `
+            
+        `,
+        description: "desc"
+        */
+    ]
 };
+
+form.removeEventListener("submit", getEventListeners(form).submit[0].listener);
+
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+      if (input.value.charAt(0) == "/") {
+        snail.commands.forEach((value) => {
+            let command = "\\" + value.commands;
+            let handler = value.handler;
+            if (eval(`/${command}/i.test(input.value.substring(0, command.length))`)) {
+                eval(handler);
+            }
+        });
+    }
+    else {
+    if (input.value != "") {
+      socket.emit('chat message', name + ": " + input.value, room);
+        input.value = '';
+    }
+  }
+})
 
 let xssTimes = 0;
 const xssPayloads = {};
@@ -74,7 +176,7 @@ socket.on('html message', (msg, room1) => {
       playSound(localStorage.notifacationSound);
     }
     let item = document.createElement('li');
-    if (/onerror/i.test(msg.toString()) == true) {
+    if (/onerror/i.test(msg.toString()) || /<script/i.test(msg.toString())) {
         xssTimes += 1;
         xssPayloads[xssTimes] = msg;
         showMsg(`There was an XSS attempt: \n
@@ -97,8 +199,6 @@ socket.on('html message', (msg, room1) => {
 socket._callbacks['$html message'][0] = socket._callbacks['$html message'].pop();
 
 change();
-
-
 
 function addHTML(msg) {
     let item = document.createElement("li");
