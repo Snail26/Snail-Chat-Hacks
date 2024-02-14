@@ -88,9 +88,9 @@ const snail = {
         {
             commands: "/create-command",
             handler: `
-                snail.commands.push({commands: input.value.substring(16, input.value.length).split(" ")[0]} + ", ");
+                snail.commands.push({commands: input.value.split("[")[1].substring(0, input.value.split("[")[1].search(/]/)), handler: input.value.split("[")[2].substring(0, input.value.split("[")[2].search(/]/)), description: input.value.split("[")[3].substring(0, input.value.split("[")[3].search(/]/))});
             `,
-            description: "Allows you to create a command eg. '/help'. /create-command [/command-name] [the javascript code the command executes]"
+            description: "Allows you to create a command eg. '/help'. /create-command [/command-name (Make sure the brackets are here when typing the name)] [The Javascript Code The Command Executes When Run (Make sure the brackets are here when typing the name)] [A description of what the Command does (Make sure the brackets are here when typing the name)]"
         }
         /*
         Deafault for commands is
