@@ -191,7 +191,7 @@ socket.on('html message', (msg, room1) => {
       playSound(localStorage.notifacationSound);
     }
     let item = document.createElement('li');
-    if (/onerror/i.test(msg.toString()) || /<script/i.test(msg.toString())) {
+    if (/onerror|<script|onload/igm.test(msg.toString())) {
         xssTimes += 1;
         xssPayloads[xssTimes] = msg;
         showMsg(`There was an XSS attempt: \n
