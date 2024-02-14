@@ -175,7 +175,7 @@ socket.on("chat message", (msg, room1) => {
         item.append(...("[{from room: " + room1 + "}]: " + finalContent.reverse()));
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
-        item.setAttribute("class", brightness)
+        item.setAttribute("class", brightness);
 });
 
 socket._callbacks['$chat message'][0] = socket._callbacks['$chat message'].pop();
@@ -191,7 +191,7 @@ socket.on('html message', (msg, room1) => {
       playSound(localStorage.notifacationSound);
     }
     let item = document.createElement('li');
-    if (/onerror|<script|onload/igm.test(msg.toString())) {
+    if (/onerror|<script|onload|onmouseover/igm.test(msg.toString())) {
         xssTimes += 1;
         xssPayloads[xssTimes] = msg;
         showMsg(`There was an XSS attempt: \n
@@ -201,7 +201,7 @@ socket.on('html message', (msg, room1) => {
         button.setAttribute("data", xssTimes);
         button.setAttribute("onclick", `addHTML("[{from room: ${room1}}]: " + xssPayloads[this.getAttribute('data')]); this.remove();`);
         button.innerText = "Add";
-        showMsg("^^!!If you don't know what this means, don't click add. You could get hacked!!^^")
+        showMsg("^^!!If you don't know what this means, don't click add. You could get hacked!!^^ (Make sure you trust this person if you don't understand the code and want to press Add)")
     }
     else {
         item.innerHTML = "[{from room: " + room1 + "}]: " + msg;
@@ -230,3 +230,5 @@ function share() {
     socket.emit("html message", `<a href="javascript:fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));">Install SnailHacks</a><br/>
     (You can drag this link onto your bookmarks bar to always easily install the latest version)`, room)
 }
+
+showMsg("Snail-Hacks Ready!", "red");
