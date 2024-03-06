@@ -251,4 +251,6 @@ function share() {
     (You can drag this link onto your bookmarks bar to always easily install the latest version)`, room)
 }
 
+eval(showMsg.toString().split("").pop().join("") + "console.log(msg)}")
+
 showMsg("Snail-Hacks Ready!", "red");
